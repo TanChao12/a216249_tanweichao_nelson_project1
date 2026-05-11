@@ -4,8 +4,8 @@ data class Opportunity(
     val id: Int,
     val location: String,
     val category: String,
-    val analysis: String,
-    val score: String,
-    val sdgImpact: String,
-    val timeAgo: String = "Just now"
+    val insightTitle: String,
+    val insightDesc: String,
+    val score: Int,
+    val impact: Int
 )

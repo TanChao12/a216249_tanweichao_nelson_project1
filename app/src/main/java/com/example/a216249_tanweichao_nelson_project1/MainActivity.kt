@@ -9,7 +9,6 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.*
 
@@ -25,12 +24,13 @@ class MainActivity : ComponentActivity() {
 
                 Scaffold(
                     bottomBar = {
-                        if (currentRoute in listOf("home", "find", "profile")) {
-                            NavigationBar(containerColor = Color.White) {
+                        if (currentRoute != "landing" && currentRoute != null) {
+                            NavigationBar {
                                 val navItems = listOf(
-                                    Triple("home", "HOME", Icons.Default.Home),
-                                    Triple("find", "FIND", Icons.Default.Search),
-                                    Triple("profile", "PROFILE", Icons.Default.Person)
+                                    Triple("dashboard", "Dashboard", Icons.Default.GridView),
+                                    Triple("search", "Search", Icons.Default.Search),
+                                    Triple("network", "Network", Icons.Default.Groups),
+                                    Triple("profile", "Profile", Icons.Default.Person)
                                 )
                                 navItems.forEach { (route, label, icon) ->
                                     NavigationBarItem(
@@ -38,9 +38,8 @@ class MainActivity : ComponentActivity() {
                                         label = { Text(label) },
                                         selected = currentRoute == route,
                                         onClick = { navController.navigate(route) {
-                                            popUpTo("home") { saveState = true }
+                                            popUpTo("dashboard") { saveState = true }
                                             launchSingleTop = true
-                                            restoreState = true
                                         }}
                                     )
                                 }
@@ -48,16 +47,13 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 ) { innerPadding ->
-                    NavHost(navController, startDestination = "home", Modifier.padding(innerPadding)) {
-                        composable("home") { HomeScreen(navController, vm) }
-                        composable("find") { InputScreen(navController) }
+                    NavHost(navController, "landing", Modifier.padding(innerPadding)) {
+                        composable("landing") { LandingScreen(navController) }
+                        composable("dashboard") { DashboardScreen(navController, vm) }
+                        composable("search") { SearchScreen(navController, vm) }
+                        composable("analysis") { AnalysisResultScreen(navController, vm) }
+                        composable("network") { NetworkScreen() }
                         composable("profile") { ProfileScreen(vm) }
-                        composable("analysis/{loc}/{cat}") { b ->
-                            AnalysisScreen(navController, vm, b.arguments?.getString("loc")?:"", b.arguments?.getString("cat")?:"")
-                        }
-                        composable("detail/{id}") { b ->
-                            DetailScreen(navController, vm, b.arguments?.getString("id")?.toInt() ?: 0)
-                        }
                     }
                 }
             }
